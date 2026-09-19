@@ -195,6 +195,73 @@
         radial-gradient(ellipse 55% 45% at 20% 70%, rgba(192,112,80,.12) 0%, transparent 60%),
         linear-gradient(160deg, #faf8f5 0%, #f6ede3 55%, #f0e6d8 100%);
     }
+    /* Perfume decorativo: integra o produto à atmosfera da marca sem competir com o conteúdo */
+    .hero-perfume {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      border-radius: 40px;
+      overflow: hidden;
+      opacity: .11;
+      mix-blend-mode: multiply;
+      filter: saturate(.72) sepia(.16) contrast(.94) blur(.35px);
+      box-shadow: 0 28px 70px rgba(116, 67, 37, .12);
+    }
+
+    .hero-perfume::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 25%, rgba(246, 237, 227, .82) 88%);
+      pointer-events: none;
+    }
+
+    .hero-perfume img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-perfume-main {
+      width: clamp(280px, 34vw, 500px);
+      height: clamp(360px, 46vw, 640px);
+      right: clamp(-120px, -4vw, -40px);
+      top: 50%;
+      transform: translateY(-50%) rotate(6deg);
+      animation: floatPerfume 10s ease-in-out infinite;
+    }
+
+    .hero-perfume-soft {
+      width: clamp(190px, 23vw, 330px);
+      height: clamp(250px, 34vw, 470px);
+      left: clamp(-100px, -3vw, -30px);
+      bottom: 2%;
+      opacity: .055;
+      transform: rotate(-9deg);
+      filter: saturate(.55) sepia(.2) blur(1px);
+      animation: floatPerfumeSoft 13s ease-in-out infinite;
+    }
+
+    @keyframes floatPerfume {
+      0%, 100% { transform: translateY(-50%) rotate(6deg); }
+      50% { transform: translateY(calc(-50% - 18px)) rotate(4deg); }
+    }
+
+    @keyframes floatPerfumeSoft {
+      0%, 100% { transform: translateY(0) rotate(-9deg); }
+      50% { transform: translateY(-14px) rotate(-6deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-perfume-main,
+      .hero-perfume-soft {
+        animation: none;
+      }
+    }
+
     .hero-orb {
       position: absolute; border-radius: 50%;
       filter: blur(55px); pointer-events: none;
@@ -780,3 +847,637 @@
       .not-found-actions { flex-direction: column; align-items: stretch; }
       .not-found-actions .btn { width: 100%; }
     }
+
+/* =========================================================
+   RESPONSIVIDADE REESTRUTURADA — ROSÂNGELA CORRÊA STORE
+   ========================================================= */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+header,
+main,
+section,
+footer,
+.container,
+.section {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.container {
+  width: 100%;
+}
+
+header {
+  width: 100%;
+}
+
+nav {
+  min-width: 0;
+}
+
+.mob-nav {
+  width: 100%;
+  max-width: 100%;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.mob-nav.open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.hero-inner,
+.section-head,
+.hero-actions,
+.trust-inner,
+.sobre-inner,
+.contact-cards {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero-title,
+.hero-sub,
+.hero-sub2,
+.title,
+.desc,
+.produto h3,
+.produto-tag,
+.produto-price,
+.btn,
+.contact-card,
+.roupas-notify {
+  overflow-wrap: anywhere;
+}
+
+.hero-actions .btn,
+.not-found-actions .btn {
+  max-width: 100%;
+}
+
+.produtos-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
+  align-items: stretch;
+}
+
+.produto {
+  min-width: 0;
+  width: 100%;
+}
+
+.produto-img-wrap {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 5;
+}
+
+.produto-img-wrap img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.produto-body {
+  min-width: 0;
+}
+
+.produto-footer {
+  min-width: 0;
+  align-items: center;
+}
+
+.produto-price {
+  min-width: 0;
+}
+
+.produto-price-consulta {
+  font-size: .92rem;
+  font-weight: 700;
+}
+
+.produto .btn-wa-sm {
+  min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
+  justify-content: center;
+}
+
+.perfumes-cta {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.perfumes-cta p {
+  max-width: 100%;
+  color: var(--brown);
+  font-size: .82rem;
+  opacity: .8;
+}
+
+.perfumes-cta .btn {
+  max-width: 100%;
+}
+
+.sobre-inner > *,
+.contact-card,
+.roupas-notify,
+.sobre-visual {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sobre-values {
+  min-width: 0;
+}
+
+.contact-cards {
+  width: 100%;
+}
+
+.contact-card {
+  flex: 1 1 180px;
+}
+
+.wa-float {
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+.cookie-banner {
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 1100px) {
+  .produtos-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  nav {
+    gap: 1.15rem;
+  }
+
+  .sobre-inner {
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 860px) {
+  header {
+    padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  }
+
+  .logo-img {
+    height: 42px;
+    max-width: min(150px, 55vw);
+  }
+
+  .mob-nav {
+    left: 0;
+    right: 0;
+    max-height: calc(100svh - 68px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .section {
+    padding-inline: clamp(1rem, 4vw, 2rem);
+  }
+
+  .produtos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sobre-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sobre-logo-wrap {
+    width: min(100%, 420px);
+  }
+
+  .sobre-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 600px;
+  }
+
+  .contact-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-perfume-main {
+    width: 230px;
+    height: 310px;
+    right: -95px;
+    top: 39%;
+    opacity: .075;
+  }
+
+  .hero-perfume-soft {
+    width: 170px;
+    height: 235px;
+    left: -95px;
+    bottom: 5%;
+    opacity: .035;
+  }
+
+  #inicio {
+    min-height: auto;
+    padding: 7rem 1rem 4rem;
+  }
+
+  .hero-inner {
+    width: min(100%, 620px);
+  }
+
+  .hero-logo {
+    width: clamp(150px, 52vw, 220px);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.15rem, 10vw, 3.4rem);
+  }
+
+  .hero-title em {
+    display: block;
+  }
+
+  .hero-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    padding-inline: 1rem;
+  }
+
+  .trust-bar {
+    padding-inline: 1rem;
+  }
+
+  .trust-inner {
+    gap: .75rem 1.2rem;
+  }
+
+  .trust-item {
+    font-size: .68rem;
+  }
+
+  .section {
+    padding-block: 4rem;
+  }
+
+  .section-head {
+    margin-bottom: 2rem;
+  }
+
+  .title {
+    font-size: clamp(1.7rem, 8vw, 2.35rem);
+  }
+
+  .produtos-grid {
+    gap: .9rem;
+  }
+
+  .produto {
+    border-radius: 15px;
+  }
+
+  .produto-body {
+    padding: 1rem;
+    gap: .45rem;
+  }
+
+  .produto h3 {
+    font-size: 1rem;
+  }
+
+  .produto-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .75rem;
+    margin-top: .35rem;
+  }
+
+  .produto .btn-wa-sm {
+    width: 100%;
+    padding: .7rem .8rem;
+  }
+
+  .sobre-values {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contact-cards {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 420px;
+  }
+
+  .contact-card {
+    min-height: 130px;
+  }
+
+  .wa-float {
+    width: 54px;
+    height: 54px;
+    right: max(.75rem, env(safe-area-inset-right));
+    bottom: calc(.75rem + env(safe-area-inset-bottom));
+  }
+
+  .wa-float svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .cookie-banner {
+    left: .6rem;
+    right: .6rem;
+    bottom: calc(.6rem + env(safe-area-inset-bottom));
+    width: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .produtos-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .produto-img-wrap {
+    aspect-ratio: 4 / 5;
+  }
+
+  .produto-body {
+    padding: 1.05rem;
+  }
+
+  .produto h3 {
+    font-size: 1.08rem;
+  }
+
+  .produto-price {
+    font-size: 1.08rem;
+  }
+
+  .hero-badge {
+    max-width: 100%;
+    letter-spacing: .16em;
+  }
+
+  .scroll-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 320px) {
+  .hero-perfume-main {
+    right: -120px;
+    opacity: .05;
+  }
+
+  .hero-perfume-soft {
+    display: none;
+  }
+
+  .section,
+  #contato {
+    padding-inline: .8rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .produto-body {
+    padding: 1rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  #inicio {
+    min-height: 100svh;
+    padding-top: 5.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .hero-logo {
+    width: clamp(110px, 22vh, 170px);
+    margin-bottom: .8rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 8vh, 3.2rem);
+  }
+
+  .hero-sub {
+    margin-top: .6rem;
+  }
+
+  .hero-sub2 {
+    margin-bottom: 1rem;
+  }
+
+  .scroll-arrow {
+    display: none;
+  }
+}
+
+/* =========================================================
+   FINAL BRAND + RESPONSIVE PASS — 2026-09-19
+   ========================================================= */
+:root {
+  --cream: #f9f1e1;
+  --beige: #f2e5cf;
+  --nude: #dfc4a4;
+  --blush: #c98a5d;
+  --rose: #a96335;
+  --mauve: #8f522d;
+  --brown: #70401f;
+  --dark: #3c2415;
+  --gold: #bd8648;
+  --gold2: #e2bd7c;
+}
+
+html { width: 100%; overflow-x: clip; }
+body { width: 100%; overflow-x: clip; background: var(--cream); }
+
+header {
+  height: 92px;
+  padding-inline: clamp(.9rem, 4vw, 2.5rem);
+}
+.logo-img {
+  width: auto;
+  height: 78px;
+  max-width: 110px;
+  object-fit: contain;
+  object-position: center;
+}
+.mob-nav { top: 92px; max-height: calc(100svh - 92px); }
+
+.hero-logo {
+  width: min(100%, 440px);
+  max-width: 440px;
+  aspect-ratio: 1414 / 1113;
+  object-fit: contain;
+}
+
+.sobre-logo-wrap img,
+.not-found-logo {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 1414 / 1113;
+  object-fit: contain;
+}
+
+/* Never allow a component's content to create viewport overflow. */
+.container,
+.section,
+.section-head,
+.hero-inner,
+.sobre-inner,
+.sobre-copy,
+.sobre-visual,
+.contact-cards,
+.contact-card,
+.produto,
+.produto-body,
+.produto-footer,
+.perfumes-cta,
+.roupas-notify,
+footer {
+  min-width: 0;
+}
+
+.section { width: 100%; }
+.container { width: min(100%, 1180px); margin-inline: auto; }
+
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+.produto { overflow: hidden; }
+.produto-img-wrap { overflow: hidden; width: 100%; aspect-ratio: 4 / 5; }
+.produto-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+
+.btn,
+.btn-wa,
+.btn-outline,
+.btn-gold,
+.btn-wa-sm {
+  max-width: 100%;
+}
+
+/* Keep mobile navigation out of layout until opened. */
+.mob-nav {
+  width: 100%;
+  right: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@media (max-width: 1100px) {
+  .produtos-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  nav { gap: 1rem; }
+}
+
+@media (max-width: 860px) {
+  header { height: 82px; }
+  .logo-img { height: 70px; max-width: 96px; }
+  .mob-nav { top: 82px; max-height: calc(100svh - 82px); }
+  .produtos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sobre-inner { grid-template-columns: minmax(0, 1fr); }
+  .sobre-logo-wrap { width: min(100%, 420px); margin-inline: auto; }
+  .contact-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  header { height: 76px; }
+  .logo-img { height: 64px; max-width: 82px; }
+  .mob-nav { top: 76px; max-height: calc(100svh - 76px); }
+
+  #inicio {
+    min-height: auto;
+    padding: 6.8rem 1rem 4.5rem;
+  }
+  .hero-inner { width: 100%; }
+  .hero-logo { width: min(78vw, 330px); margin-bottom: 1.25rem; }
+  .hero-title { font-size: clamp(2rem, 10vw, 3.25rem); line-height: 1.06; }
+  .hero-sub { max-width: 34rem; margin-inline: auto; }
+  .hero-actions { width: 100%; flex-direction: column; align-items: stretch; gap: .7rem; }
+  .hero-actions .btn { width: 100%; min-height: 50px; }
+
+  .section { padding-inline: 1rem; }
+  .section-head { width: 100%; }
+  .title { font-size: clamp(1.7rem, 8vw, 2.35rem); }
+  .desc { font-size: .9rem; }
+
+  .produtos-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .produto-img-wrap { aspect-ratio: 4 / 5; }
+  .produto-body { padding: 1rem; }
+  .produto-footer { display: grid; grid-template-columns: minmax(0, 1fr); gap: .7rem; }
+  .produto .btn-wa-sm { width: 100%; min-height: 46px; padding-inline: .8rem; }
+
+  .sobre-logo-wrap { max-width: 340px; }
+  .contact-cards { grid-template-columns: minmax(0, 1fr); }
+  .contact-card { width: 100%; }
+
+  .cookie-banner { left: .65rem; right: .65rem; bottom: calc(.65rem + env(safe-area-inset-bottom)); padding: 1rem; }
+  .cookie-actions { width: 100%; }
+  .cookie-btn { flex: 1; min-height: 44px; }
+  .wa-float { right: max(.75rem, env(safe-area-inset-right)); bottom: calc(.75rem + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 380px) {
+  .logo-img { height: 60px; max-width: 78px; }
+  header { height: 72px; }
+  .mob-nav { top: 72px; max-height: calc(100svh - 72px); }
+  #inicio { padding-top: 6.2rem; }
+  .hero-logo { width: min(82vw, 290px); }
+  .hero-title { font-size: 2rem; }
+  .section { padding-inline: .85rem; }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  header { height: 70px; }
+  .logo-img { height: 58px; }
+  .mob-nav { top: 70px; max-height: calc(100svh - 70px); }
+}

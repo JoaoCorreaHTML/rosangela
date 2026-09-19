@@ -12,15 +12,26 @@ function toggleNav() {
   const isOpen = ham.classList.toggle('open');
   mobNav.classList.toggle('open', isOpen);
   ham.setAttribute('aria-expanded', String(isOpen));
+  ham.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+  mobNav.setAttribute('aria-hidden', String(!isOpen));
 }
 function closeNav() {
   ham.classList.remove('open');
   mobNav.classList.remove('open');
   ham.setAttribute('aria-expanded', 'false');
+  ham.setAttribute('aria-label', 'Abrir menu');
+  mobNav.setAttribute('aria-hidden', 'true');
 }
+mobNav.setAttribute('aria-hidden', 'true');
 ham.addEventListener('click', toggleNav);
 // Expose closeNav for inline onclick handlers on mobile nav links
 window.closeNav = closeNav;
+
+// Close mobile nav when clicking outside the menu/header
+document.addEventListener('click', (e) => {
+  if (!mobNav.classList.contains('open')) return;
+  if (!mobNav.contains(e.target) && !ham.contains(e.target)) closeNav();
+});
 
 // Close mobile nav on Escape
 document.addEventListener('keydown', (e) => {
