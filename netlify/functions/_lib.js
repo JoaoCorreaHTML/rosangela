@@ -36,7 +36,7 @@ async function sb(path, opt = {}, key = SVC) {
 const rest = (p, o) => sb('/rest/v1/' + p, o);
 
 async function requireAdmin(event) {
-  const token = (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer\\s+/i, '');
+  const token = (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer\s+/i, '');
   if (!token) throw new HttpError(401, 'Faça login para continuar');
   let user;
   try {
@@ -63,7 +63,7 @@ const wrap = (fn, { admin = true, methods } = {}) => async (event) => {
   }
 };
 
-const slugify = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'item';
+const slugify = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'item';
 const str = (v, max, label, req) => { const s = typeof v === 'string' ? v.trim() : ''; if (req && !s) throw new HttpError(400, `${label} é obrigatório`); if (s.length > max) throw new HttpError(400, `${label} excede ${max} caracteres`); return s || null; };
 
 function cleanProduct(b) {
