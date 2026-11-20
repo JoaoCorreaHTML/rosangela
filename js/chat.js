@@ -7,6 +7,7 @@
   };
   const allowedUrl = (url) => typeof url === 'string' && (
     /^https:\/\/(wa\.me|www\.instagram\.com|www\.google\.com\/maps)\//.test(url) ||
+    /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//.test(url) ||
     /^\/(produto\/|#catalogo|assets\/)/.test(url) ||
     url === '/#catalogo'
   );
