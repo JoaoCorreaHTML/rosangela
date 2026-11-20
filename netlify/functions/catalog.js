@@ -20,7 +20,11 @@ exports.handler = async (event) => {
     ]);
     for (const p of products) p.images.sort((a, b) => (b.is_main - a.is_main) || (a.position - b.position));
     return { statusCode: 200, headers: { ...H, 'Cache-Control': 'public, max-age=60' }, body: JSON.stringify({ categories, products }) };
-  } catch (e) {
-    return { statusCode: 502, headers: H, body: '{"error":"Não foi possível carregar o catálogo agora"}' };
-  }
-};
+ } catch(e) {
+  console.error('ERRO AO CARREGAR CATÁLOGO:', e);
+
+  return {
+    statusCode: 502,
+    body: '{"error":"Não foi possível carregar o catálogo agora"}'
+  };
+}
