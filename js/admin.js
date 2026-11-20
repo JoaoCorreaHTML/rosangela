@@ -1,6 +1,52 @@
 (() => {
   const $ = (s) => document.querySelector(s);
   const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
+  const iconMarkup = {
+    dashboard: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="4" rx="1"/><rect x="14" y="10" width="7" height="11" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/>',
+    products: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 13l9 5 9-5M12 13v8"/>',
+    categories: '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1"/>',
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
+    delete: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>',
+    add: '<path d="M12 5v14M5 12h14"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    logout: '<path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>',
+    save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+    close: '<path d="m18 6-12 12M6 6l12 12"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    login: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/>'
+  };
+  function withIcon(button, name) {
+    if (!button || button.querySelector(':scope > svg.admin-action-icon')) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.classList.add('admin-action-icon');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const group = document.createElementNS(ns, 'g');
+    group.setAttribute('fill', 'none');
+    group.setAttribute('stroke', 'currentColor');
+    group.setAttribute('stroke-width', '1.8');
+    group.setAttribute('stroke-linecap', 'round');
+    group.setAttribute('stroke-linejoin', 'round');
+    const template = document.createElementNS(ns, 'svg');
+    template.innerHTML = iconMarkup[name] || iconMarkup.eye;
+    while (template.firstChild) group.append(template.firstChild);
+    svg.append(group);
+    button.prepend(svg);
+    button.classList.add('has-admin-icon');
+  }
+  function setupAdminIcons() {
+    document.querySelectorAll('.tabs button').forEach((b) => withIcon(b, ({dash:'dashboard',prod:'products',cat:'categories'})[b.dataset.v]));
+    withIcon($('#np'),'add'); withIcon($('#nc'),'add'); withIcon($('#out'),'logout');
+    document.querySelectorAll('#pf [data-close],#cf [data-close],#xno').forEach((b)=>withIcon(b,'close'));
+    withIcon($('#psave'),'save');
+    document.querySelectorAll('#cf button[type="submit"],#xyes').forEach((b)=>withIcon(b,'save'));
+    const siteLink=document.querySelector('#app .right a.lnk');
+    if(siteLink) withIcon(siteLink,'eye');
+    const loginButton=$('#lf button[type="submit"]');
+    if(loginButton) withIcon(loginButton,'login');
+  }
   const money = (v) => v == null ? 'Preço sob consulta' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const src = (u) => (u && !/^(https?:|\/)/.test(u) ? '/' + u : u);
   const S = { products: [], categories: [] };
@@ -25,7 +71,7 @@
   async function load() { Object.assign(S, await api('admin-products')); render(); }
   function render() {
     const on = S.products.filter((p) => p.status === 'disponivel').length;
-    $('#stats').replaceChildren(...[[S.products.length, 'Produtos'], [on, 'Disponíveis'], [S.products.length - on, 'Indisponíveis'], [S.categories.length, 'Categorias']].map(([n, l]) => { const s = el('div', 'stat'); s.append(el('b', null, n), el('span', null, l)); return s; }));
+    $('#stats').replaceChildren(...[[S.products.length, 'Produtos'], [on, 'Disponíveis'], [S.products.length - on, 'Indisponíveis'], [S.categories.length, 'Categorias']].map(([n, l]) => { const s = el('div', 'stat'); const ico = el('span', 'stat-icon'); const key = l === 'Produtos' ? 'products' : l === 'Categorias' ? 'categories' : 'dashboard'; withIcon(ico, key); s.append(ico, el('b', null, n), el('span', null, l)); return s; }));
     $('#recent').replaceChildren(...S.products.slice(0, 5).map((p) => prow(p, true)));
     const pc = $('#pc'), cur = pc.value; pc.replaceChildren(new Option('Todas as categorias', ''), ...S.categories.map((c) => new Option(c.name, c.id))); pc.value = cur;
     drawProducts(); drawCats();
@@ -35,8 +81,8 @@
     if (i) { const im = el('img'); im.src = src(i.url); im.alt = ''; im.width = 56; im.height = 74; r.append(im); } else r.append(el('div', 'ph'));
     const m = el('div'); const b = el('b', null, p.name); b.append(el('span', 'pill' + (p.status === 'disponivel' ? ' ok' : ''), p.status === 'disponivel' ? 'Disponível' : 'Indisponível'));
     m.append(b, el('small', null, `${catName(p.category_id)} · ${money(p.price)}`)); r.append(m);
-    if (!ro) { const a = el('div', 'ra'); const e = el('button', 'btn ghost xs', 'Editar'); e.type = 'button'; e.onclick = () => openProduct(p);
-      const d = el('button', 'btn ghost xs', 'Excluir'); d.type = 'button'; d.onclick = async () => { if (!await ask(`Excluir "${p.name}" e todas as suas imagens? Esta ação não pode ser desfeita.`)) return; try { await api('admin-products?id=' + p.id, 'DELETE', null, { 'x-confirm': 'delete' }); toast('Produto excluído'); await load(); } catch (x) { toast(x.message); } };
+    if (!ro) { const a = el('div', 'ra'); const e = el('button', 'btn ghost xs', 'Editar'); withIcon(e, 'edit'); e.type = 'button'; e.onclick = () => openProduct(p);
+      const d = el('button', 'btn ghost xs', 'Excluir'); withIcon(d, 'delete'); d.type = 'button'; d.onclick = async () => { if (!await ask(`Excluir "${p.name}" e todas as suas imagens? Esta ação não pode ser desfeita.`)) return; try { await api('admin-products?id=' + p.id, 'DELETE', null, { 'x-confirm': 'delete' }); toast('Produto excluído'); await load(); } catch (x) { toast(x.message); } };
       a.append(e, d); r.append(a); }
     return r;
   }
@@ -60,9 +106,9 @@
     const box = $('#pimgs'); const p = editing && S.products.find((x) => x.id === editing); $('#imgsbox').hidden = !p;
     if (!p) return; box.replaceChildren(...(p.images.length ? p.images : []).map((i) => {
       const w = el('div', 'im'); const im = el('img', i.is_main ? 'on' : ''); im.src = src(i.url); im.alt = i.alt || ''; im.width = 72; im.height = 96;
-      const m = el('button', 'btn ghost xs', i.is_main ? 'Principal' : 'Tornar principal'); m.type = 'button'; m.disabled = i.is_main;
+      const m = el('button', 'btn ghost xs', i.is_main ? 'Principal' : 'Tornar principal'); withIcon(m, 'image'); m.type = 'button'; m.disabled = i.is_main;
       m.onclick = async () => { try { await api('admin-upload', 'PATCH', { image_id: i.id }); await load(); drawImgs(); } catch (x) { toast(x.message); } };
-      const d = el('button', 'btn ghost xs', 'Remover'); d.type = 'button';
+      const d = el('button', 'btn ghost xs', 'Remover'); withIcon(d, 'delete'); d.type = 'button';
       d.onclick = async () => { if (!await ask('Remover esta imagem?')) return; try { await api('admin-upload?image_id=' + i.id, 'DELETE', null, { 'x-confirm': 'delete' }); await load(); drawImgs(); } catch (x) { toast(x.message); } };
       w.append(im, m, d); return w;
     }));
@@ -113,5 +159,6 @@
       const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'Não foi possível entrar'); save(d); $('#pw').value = ''; enter();
     } catch (x) { err.textContent = x.message; }
   });
+  setupAdminIcons();
   if (tok) enter();
 })();
