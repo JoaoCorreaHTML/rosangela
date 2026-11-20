@@ -86,7 +86,7 @@
   input.maxLength = 300;
   input.placeholder = 'Digite sua dúvida ou procure um produto...';
   input.setAttribute('aria-label', 'Digite sua mensagem');
-  const send = el('button', 'chat-send', '➤');
+  const send = iconButton(el('button', 'chat-send'), 'arrow');
   send.type = 'submit';
   send.setAttribute('aria-label', 'Enviar mensagem');
   form.append(input, send);
