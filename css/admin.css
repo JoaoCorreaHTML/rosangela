@@ -101,3 +101,81 @@ body:has(#login){background:radial-gradient(ellipse at 12% 8%,rgba(156,90,46,.10
   #app .row.cat .ra{grid-template-columns:1fr 1fr}
 }
 @media(prefers-reduced-motion:reduce){#app *,#login *{scroll-behavior:auto;transition:none!important}}
+
+
+/* Admin contrast and navigation clarity */
+#app .tabs button{
+  color:#f3e8dc!important;
+  background:transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  font-weight:600;min-height:42px;
+}
+#app .tabs button::before{
+  display:inline-grid;place-items:center;width:1.15rem;height:1.15rem;
+  font-size:1rem;line-height:1;opacity:.95;
+}
+#app .tabs button[data-v="dash"]::before{content:"▦"}
+#app .tabs button[data-v="prod"]::before{content:"◇"}
+#app .tabs button[data-v="cat"]::before{content:"▤"}
+#app .tabs button:hover,#app .tabs button:focus-visible{
+  color:#21170f!important;background:#f0d7b5!important;
+  outline:2px solid rgba(240,215,181,.35);outline-offset:1px;
+}
+#app .tabs button.on{
+  color:#21170f!important;background:#e9c99e!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+#app .right .lnk{color:#f3e8dc!important}
+#app .right .lnk:hover,#app .right .lnk:focus-visible{
+  color:#21170f!important;background:#e9c99e!important;border-color:#e9c99e!important;
+  text-decoration:none;outline:none;
+}
+#app .logo{color:#f3e8dc!important}
+#app .btn.ghost:hover{background:#e9c99e!important;color:#21170f!important;border-color:#e9c99e!important}
+#app .btn:not(.ghost):hover{filter:brightness(1.12);box-shadow:0 5px 16px rgba(0,0,0,.16)}
+#app .row:hover{border-color:var(--bronze);box-shadow:0 7px 22px rgba(48,36,29,.07)}
+#app .row .btn:hover{filter:brightness(1.1)}
+#app .tabs button:focus-visible,#app a:focus-visible,#app button:focus-visible{outline:2px solid #d8ad7b;outline-offset:3px}
+
+/* Login: layered warm editorial background instead of a flat fill */
+body:has(#login:not([hidden])){
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 12% 18%,rgba(184,126,76,.28),transparent 34%),
+    radial-gradient(ellipse at 88% 78%,rgba(75,91,73,.22),transparent 36%),
+    linear-gradient(132deg,#17130f 0%,#30251d 42%,#57402e 100%)!important;
+  overflow-x:hidden;
+}
+body:has(#login:not([hidden]))::before,
+body:has(#login:not([hidden]))::after{
+  content:"";position:fixed;z-index:0;pointer-events:none;border:1px solid rgba(239,216,187,.16);
+  border-radius:50%;transform:rotate(-28deg);
+}
+body:has(#login:not([hidden]))::before{
+  width:min(72vw,760px);height:min(72vw,760px);right:-18vw;top:-28vw;
+  box-shadow:0 0 0 34px rgba(239,216,187,.025),0 0 0 68px rgba(239,216,187,.02),0 0 0 102px rgba(239,216,187,.015);
+}
+body:has(#login:not([hidden]))::after{
+  width:min(48vw,520px);height:min(48vw,520px);left:-20vw;bottom:-25vw;
+  box-shadow:0 0 0 28px rgba(239,216,187,.025),0 0 0 56px rgba(239,216,187,.02);
+}
+#login.login{position:relative;z-index:1}
+#login .box{
+  background:rgba(250,242,230,.97)!important;color:#2b2119!important;
+  border:1px solid rgba(255,255,255,.52)!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.32),0 1px 0 rgba(255,255,255,.65) inset!important;
+  backdrop-filter:blur(16px);
+}
+#login .box h1{color:#2b2119!important}
+#login .box .sub,#login label{color:#655344!important}
+#login input{background:#fffaf3!important;color:#2b2119!important;border-color:#d9c5ae!important}
+#login input:focus{border-color:#a66b3e!important;box-shadow:0 0 0 4px rgba(166,107,62,.15)!important}
+#login .btn{background:#8f5935!important;color:#fff8ef!important;border:1px solid #8f5935!important}
+#login .btn:hover{background:#704329!important}
+#login .err{color:#a23e32!important}
+#login:before{color:#f0d7b5!important}
+#login:after{color:rgba(255,242,225,.72)!important}
+@media(max-width:640px){
+ #app .tabs button{flex:1;min-width:max-content}
+ #app .tabs button::before{font-size:.95rem}
+}
