@@ -421,3 +421,33 @@ body:has(#login:not([hidden]))::after{
 #pdlg #pf input::placeholder,
 #pdlg #pf textarea::placeholder,
 #cdlg #cf input::placeholder{color:#8a7867;opacity:1}
+
+/* Semantic icons + accessible hover/focus feedback */
+.has-admin-icon{display:inline-flex!important;align-items:center;justify-content:center;gap:.55rem}
+.admin-action-icon{width:17px;height:17px;flex:0 0 17px;display:block;transition:transform .18s ease,color .18s ease}
+.stat-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-bottom:.65rem;border-radius:12px;background:rgba(190,145,94,.14);color:var(--bronze2)}
+.stat-icon .admin-action-icon{width:20px;height:20px;flex-basis:20px}
+#app .btn,#app .tabs button,#app .right .lnk,.login .btn{transition:background-color .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+#app .btn:hover,#app .tabs button:hover,#app .right .lnk:hover,.login .btn:hover{
+  color:#211811!important;
+  background:#e8c99f!important;
+  border-color:#e8c99f!important;
+  box-shadow:0 5px 16px rgba(0,0,0,.16);
+}
+#app .btn:hover .admin-action-icon,#app .tabs button:hover .admin-action-icon,#app .right .lnk:hover .admin-action-icon,.login .btn:hover .admin-action-icon{transform:translateY(-1px);color:currentColor}
+#app .btn:focus-visible,#app .tabs button:focus-visible,#app .right .lnk:focus-visible,.login .btn:focus-visible{outline:3px solid #e8c99f;outline-offset:3px}
+#app .btn.danger:hover{background:#c85a4d!important;border-color:#c85a4d!important;color:#fff!important}
+#app .tabs button.on{background:#e8c99f;color:#211811}
+#app .tabs button.on .admin-action-icon{color:#211811}
+#app .ra .btn{min-width:96px}
+#app .has-admin-icon .admin-action-icon{margin-inline:0}
+@media(max-width:640px){#app .ra .btn{min-width:0}.has-admin-icon{gap:.4rem}.admin-action-icon{width:16px;height:16px;flex-basis:16px}}
+@media(prefers-reduced-motion:reduce){.admin-action-icon,#app .btn,#app .tabs button,#app .right .lnk,.login .btn{transition:none}}
+
+
+/* Remove legacy decorative text-symbol icons; use only the matching SVG icons
+   inserted by admin.js so each navigation item has one clear icon. */
+#app .tabs button::before{
+  content:none!important;
+  display:none!important;
+}
