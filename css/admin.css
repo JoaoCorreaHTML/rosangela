@@ -443,3 +443,11 @@ body:has(#login:not([hidden]))::after{
 #app .has-admin-icon .admin-action-icon{margin-inline:0}
 @media(max-width:640px){#app .ra .btn{min-width:0}.has-admin-icon{gap:.4rem}.admin-action-icon{width:16px;height:16px;flex-basis:16px}}
 @media(prefers-reduced-motion:reduce){.admin-action-icon,#app .btn,#app .tabs button,#app .right .lnk,.login .btn{transition:none}}
+
+
+/* Remove legacy decorative text-symbol icons; use only the matching SVG icons
+   inserted by admin.js so each navigation item has one clear icon. */
+#app .tabs button::before{
+  content:none!important;
+  display:none!important;
+}
