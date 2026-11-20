@@ -1,20 +1,21 @@
-// Chatbot por regras: toda resposta sobre produtos vem do banco; nada é inventado.
+// Atendimento por regras: respostas baseadas exclusivamente no catálogo real do Supabase.
 const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
 const H = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const WA = '5511971752204';
 const MAPS = 'https://www.google.com/maps/search/?api=1&query=Rua+Ab%C3%ADlio+do+Santos+Branco+498+Jardim+Praiano+Guaruj%C3%A1';
 const IG = 'https://www.instagram.com/rosangela_correastoreoficial';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-const wa = (txt) => ({ label: 'Falar no WhatsApp', url: `https://wa.me/${WA}?text=${encodeURIComponent(txt || 'Olá! Vim pelo site da Rosângela Corrêa Store.')}` });
-const money = (v) => (v == null ? 'preço sob consulta' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-const line = (p) => `${p.name}${p.brand ? ' (' + p.brand + ')' : ''}: ${money(p.price)}, ${p.status === 'disponivel' ? 'disponível' : 'indisponível no momento'}`;
-const DEF = ['Quais categorias vocês têm?', 'Falar com a loja'];
-const R = (reply, links = [], suggestions = DEF) => ({ reply, links, suggestions });
+const wa = (txt) => ({ label: 'Conversar pelo WhatsApp', url: 'https://wa.me/' + WA + '?text=' + encodeURIComponent(txt || 'Olá! Vim pelo site da Rosângela Corrêa Store.') });
+const money = (v) => (v == null ? 'Preço sob consulta' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+const line = (p) => p.name + (p.brand ? ' (' + p.brand + ')' : '') + ' — ' + money(p.price) + ' · ' + (p.status === 'disponivel' ? 'Disponível' : 'Indisponível no momento');
+const DEF = ['Ver perfumes', 'Ver roupas', 'Falar com a loja'];
+const R = (reply, links, suggestions, productCards) => ({
+  reply: reply || '',
+  links: links || [],
+  suggestions: suggestions || DEF,
+  productCards: productCards || []
+});
 
-async function rest(p) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${p}`, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
-  if (!r.ok) throw new Error('db'); return r.json();
-}
 function find(t, prods) {
   let full = prods.filter((p) => t.includes(norm(p.name)));
   full = full.filter((p) => !full.some((o) => o !== p && norm(o.name).includes(norm(p.name)) && norm(o.name) !== norm(p.name)));
@@ -25,37 +26,113 @@ function find(t, prods) {
   const words = t.split(' ').filter((w) => w.length >= 4);
   return prods.filter((p) => norm(p.name).split(' ').some((n) => n.length >= 4 && words.includes(n)));
 }
-function answer(msg, { products, categories }) {
+
+function imageFor(p) {
+  const images = Array.isArray(p.images) ? p.images.slice().sort((a, b) =>
+    (Number(b.is_main) - Number(a.is_main)) || (Number(a.position) - Number(b.position))
+  ) : [];
+  const item = images[0];
+  if (!item || !item.url) return null;
+  let url = String(item.url).trim();
+  if (/^assets\//.test(url)) url = '/' + url;
+  if (!/^https:\/\//.test(url) && !/^\/(?!\/)/.test(url)) return null;
+  return { url, alt: item.alt || p.name };
+}
+
+function cardFor(p) {
+  return {
+    name: p.name,
+    brand: p.brand || '',
+    price: money(p.price),
+    status: p.status === 'disponivel' ? 'Disponível' : 'Indisponível no momento',
+    image: imageFor(p),
+    url: '/produto/' + encodeURIComponent(p.slug),
+    whatsapp: wa('Olá! Vim pelo site da Rosângela Corrêa Store e tenho interesse em: ' + p.name + (p.brand ? ' (' + p.brand + ')' : '') + '.')
+  };
+}
+
+function answer(msg, data) {
+  const products = data.products;
+  const categories = data.categories;
   const t = norm(msg);
   if (!t) return R('Escreva sua dúvida e eu ajudo.');
+
   const hit = find(t, products);
-  if (hit.length === 1) { const p = hit[0]; return R(`${line(p)}.${p.description ? ' ' + p.description : ''}`, [{ label: 'Ver produto', url: '/produto/' + p.slug }, wa(`Olá! Vim pelo site da Rosângela Corrêa Store e tenho interesse em: ${p.name}${p.brand ? ' (' + p.brand + ')' : ''}.`)], ['Quais categorias vocês têm?']); }
-  if (hit.length > 1) return R('Encontrei estes produtos:\n' + hit.slice(0, 6).map((p) => '• ' + line(p)).join('\n'), [wa()], DEF);
-  if (/^(oi|ola|bom dia|boa tarde|boa noite|e ai)\b/.test(t) && t.split(' ').length <= 4) return R('Olá! Posso ajudar com produtos, categorias, disponibilidade e contato. O que você procura?');
-  if (/(entrega|entregam|frete|envio|enviam)/.test(t)) return R('A loja não faz entregas. Para tirar dúvidas, fale com a equipe pelo WhatsApp.', [wa()]);
-  if (/(endereco|onde fica|localizacao|como chegar|mapa)/.test(t)) return R('Você pode ver a localização da loja no Google Maps.', [{ label: 'Abrir no Google Maps', url: MAPS }]);
-  if (/(instagram|insta)\b/.test(t)) return R('Estamos no Instagram.', [{ label: 'Abrir Instagram', url: IG }]);
-  if (/(atendente|humano|pessoa|whatsapp|zap|telefone|contato|falar com|loja)/.test(t)) return R('O WhatsApp da loja é (11) 97175-2204. É só tocar no botão para iniciar a conversa.', [wa(), { label: 'Instagram', url: IG }], ['Quais categorias vocês têm?']);
-  if (/(categoria|o que voces (vendem|tem)|tipos de produto|catalogo)/.test(t)) return R('Categorias do catálogo:\n' + categories.map((c) => `• ${c.name} (${products.filter((p) => p.category && p.category.slug === c.slug).length})`).join('\n'), [], categories.slice(0, 3).map((c) => 'Ver ' + c.name.toLowerCase()));
+  if (hit.length === 1) {
+    const p = hit[0];
+    return R(
+      p.description ? p.description : 'Encontrei este produto no catálogo da loja. Confira os detalhes e consulte a disponibilidade pelo WhatsApp.',
+      [{ label: 'Ver detalhes do produto', url: '/produto/' + p.slug }, wa('Olá! Tenho interesse em: ' + p.name + '.')],
+      ['Ver outros produtos', 'Consultar disponibilidade', 'Falar com a loja'],
+      [cardFor(p)]
+    );
+  }
+  if (hit.length > 1) {
+    return R('Encontrei algumas opções que podem corresponder à sua busca:', [wa()], ['Ver perfumes', 'Ver roupas'], hit.slice(0, 6).map(cardFor));
+  }
+
+  if (/^(oi|ola|bom dia|boa tarde|boa noite|e ai)\b/.test(t) && t.split(' ').length <= 4) {
+    return R('Olá! Seja bem-vinda à Rosângela Corrêa Store. Como posso ajudar você hoje?', [], ['Ver perfumes', 'Ver roupas', 'Encontrar um produto']);
+  }
+  if (/(entrega|entregam|frete|envio|enviam)/.test(t)) return R('No momento, a loja não realiza entregas. Para confirmar outras informações, fale diretamente com a equipe.', [wa()]);
+  if (/(endereco|onde fica|localizacao|como chegar|mapa)/.test(t)) return R('A loja fica no Guarujá, em São Paulo. Você pode consultar a localização pelo mapa.', [{ label: 'Ver localização no mapa', url: MAPS }]);
+  if (/(instagram|insta)\b/.test(t)) return R('Acompanhe as novidades da loja pelo Instagram.', [{ label: 'Visitar Instagram', url: IG }]);
+  if (/(atendente|humano|pessoa|whatsapp|zap|telefone|contato|falar com|loja)/.test(t)) return R('Nossa equipe pode atender você pelo WhatsApp: (11) 97175-2204.', [wa(), { label: 'Instagram da loja', url: IG }], ['Ver perfumes', 'Ver roupas']);
+  if (/(categoria|o que voces (vendem|tem)|tipos de produto|catalogo)/.test(t)) {
+    return R('Estas são as categorias disponíveis no catálogo:', [{ label: 'Abrir catálogo completo', url: '/#catalogo' }], categories.slice(0, 4).map((c) => 'Ver ' + c.name), []);
+  }
+
   const cat = categories.find((c) => t.includes(norm(c.name).replace(/s$/, '')));
-  if (cat) { const l = products.filter((p) => p.category && p.category.slug === cat.slug); return l.length ? R(`${cat.name}:\n` + l.slice(0, 10).map((p) => '• ' + line(p)).join('\n') + (l.length > 10 ? `\n…e mais ${l.length - 10}. Veja todos no catálogo.` : ''), [{ label: 'Abrir catálogo', url: '/#catalogo' }]) : R(`A categoria ${cat.name} ainda não tem produtos cadastrados. Fale com a loja para saber das novidades.`, [wa(`Olá! Quero saber sobre ${cat.name.toLowerCase()}.`)]); }
+  if (cat) {
+    const list = products.filter((p) => p.category && p.category.slug === cat.slug);
+    return list.length
+      ? R('Aqui estão algumas opções da categoria ' + cat.name + ':', [{ label: 'Ver catálogo completo', url: '/#catalogo' }], ['Ver outras categorias', 'Falar com a loja'], list.slice(0, 6).map(cardFor))
+      : R('Ainda não há produtos cadastrados na categoria ' + cat.name + '.', [wa('Olá! Gostaria de saber sobre novidades em ' + cat.name + '.')]);
+  }
+
   const brand = [...new Set(products.map((p) => p.brand).filter(Boolean))].find((b) => t.includes(norm(b)));
-  if (brand) return R(`Produtos ${brand}:\n` + products.filter((p) => p.brand === brand).slice(0, 10).map((p) => '• ' + line(p)).join('\n'), [{ label: 'Abrir catálogo', url: '/#catalogo' }]);
-  if (/(disponivel|disponibilidade|estoque|preco|valor|quanto|custa)/.test(t)) return R(`Não identifiquei o produto. Informe o nome como aparece no catálogo (por exemplo: ${products.slice(0, 2).map((p) => p.name).join(' ou ')}) ou fale com a loja.`, [wa()], ['Quais categorias vocês têm?']);
-  if (/(como|onde).*(encontr|busc|pesquis|achar|ver)/.test(t)) return R('No catálogo do site, use a busca por nome ou marca e os filtros de categoria. Tocando num produto você vê os detalhes e pode consultar a loja pelo WhatsApp.', [{ label: 'Abrir catálogo', url: '/#catalogo' }]);
-  return R('Não encontrei essa informação por aqui. Posso te encaminhar para um atendente da loja pelo WhatsApp.', [wa()]);
+  if (brand) {
+    const list = products.filter((p) => p.brand === brand);
+    return R('Encontrei estes produtos da marca ' + brand + ':', [{ label: 'Abrir catálogo', url: '/#catalogo' }], ['Ver perfumes', 'Falar com a loja'], list.slice(0, 6).map(cardFor));
+  }
+
+  if (/(disponivel|disponibilidade|estoque|preco|valor|quanto|custa)/.test(t)) {
+    return R('Não consegui identificar qual produto você procura. Digite o nome do produto como aparece no catálogo ou escolha uma categoria.', [{ label: 'Ver catálogo', url: '/#catalogo' }], ['Ver perfumes', 'Ver roupas', 'Falar com a loja']);
+  }
+  if (/(como|onde).*(encontr|busc|pesquis|achar|ver)/.test(t)) return R('Você pode explorar a coleção pelo catálogo, usar a busca por nome ou marca e filtrar por categoria. Selecione um produto para ver os detalhes.', [{ label: 'Explorar catálogo', url: '/#catalogo' }], ['Ver perfumes', 'Ver roupas']);
+  return R('Ainda não tenho essa informação cadastrada. Posso ajudar você a encontrar um produto ou encaminhar sua dúvida para a equipe da loja.', [wa()], ['Ver perfumes', 'Ver roupas', 'Falar com a loja']);
 }
+
 const hits = new Map();
 exports.handler = async (event) => {
-  const err = (s, m) => ({ statusCode: s, headers: H, body: JSON.stringify({ error: m }) });
+  const err = (status, message) => ({ statusCode: status, headers: H, body: JSON.stringify({ error: message }) });
   if (event.httpMethod !== 'POST') return err(405, 'Método não permitido');
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return err(500, 'Servidor sem configuração do Supabase');
-  const ip = event.headers['x-nf-client-connection-ip'] || (event.headers['x-forwarded-for'] || '').split(',')[0] || 'x'; const now = Date.now();
-  const h = (hits.get(ip) || []).filter((x) => now - x < 60000); if (h.length >= 20) return err(429, 'Muitas mensagens. Aguarde um minuto.'); h.push(now); hits.set(ip, h);
-  let m; try { m = JSON.parse(event.body || '{}').message; } catch { return err(400, 'JSON inválido'); }
-  if (typeof m !== 'string' || m.length > 300) return err(400, 'Mensagem inválida (máximo 300 caracteres)');
+
+  const headers = event.headers || {};
+  const ip = headers['x-nf-client-connection-ip'] || (headers['x-forwarded-for'] || '').split(',')[0] || 'x';
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter((time) => now - time < 60000);
+  if (recent.length >= 20) return err(429, 'Muitas mensagens. Aguarde um minuto.');
+  recent.push(now);
+  hits.set(ip, recent);
+
+  let message;
+  try { message = JSON.parse(event.body || '{}').message; } catch { return err(400, 'JSON inválido'); }
+  if (typeof message !== 'string' || message.length > 300) return err(400, 'Mensagem inválida (máximo 300 caracteres)');
+
   try {
-    const [categories, products] = await Promise.all([rest('categories?select=id,name,slug&order=sort_order'), rest('products?select=name,slug,brand,description,price,status,category:categories(slug)&order=created_at.asc')]);
-    return { statusCode: 200, headers: H, body: JSON.stringify(answer(m, { products, categories })) };
-  } catch { return { statusCode: 200, headers: H, body: JSON.stringify(R('Não consegui consultar o catálogo agora. Fale com a loja pelo WhatsApp.', [wa()])) }; }
+    const [categories, products] = await Promise.all([
+      fetch(SUPABASE_URL + '/rest/v1/categories?select=id,name,slug&order=sort_order', {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+      }).then((r) => { if (!r.ok) throw new Error('categories'); return r.json(); }),
+      fetch(SUPABASE_URL + '/rest/v1/products?select=name,slug,brand,description,price,status,category:categories(slug),images:product_images(url,alt,is_main,position)&order=created_at.asc', {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+      }).then((r) => { if (!r.ok) throw new Error('products'); return r.json(); })
+    ]);
+    return { statusCode: 200, headers: H, body: JSON.stringify(answer(message, { products, categories })) };
+  } catch (error) {
+    console.error('[CHAT CATALOG ERROR]', { name: error && error.name || 'Error' });
+    return { statusCode: 200, headers: H, body: JSON.stringify(R('Não consegui consultar o catálogo agora. Tente novamente ou fale com a loja pelo WhatsApp.', [wa()])) };
+  }
 };
