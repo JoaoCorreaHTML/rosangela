@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#14100d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<title>Painel | Rosângela Corrêa Store</title><link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&display=swap">
+<link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/admin.css"></head><body>
+<section id="login" class="login"><form id="lf" class="box" autocomplete="on"><h1>Painel da loja</h1><p class="sub">Entre com sua conta de administrador.</p>
+<label>E-mail<input id="em" type="email" autocomplete="username" required maxlength="254"></label>
+<label>Senha<input id="pw" type="password" autocomplete="current-password" required maxlength="200"></label>
+<p id="lerr" class="err" role="alert"></p><button class="btn" type="submit">Entrar</button></form></section>
+<div id="app" hidden>
+<header><div class="wrap bar"><a class="logo" href="/admin">Painel</a><nav class="tabs" aria-label="Seções"><button data-v="dash" class="on" type="button">Resumo</button><button data-v="prod" type="button">Produtos</button><button data-v="cat" type="button">Categorias</button></nav><div class="right"><a class="lnk" href="/" target="_blank" rel="noopener">Ver site</a><button id="out" class="lnk" type="button">Sair</button></div></div></header>
+<main class="wrap pad">
+<section id="v-dash"><h2>Resumo</h2><div id="stats" class="stats"></div><h3>Adicionados recentemente</h3><div id="recent" class="rows"></div></section>
+<section id="v-prod" hidden><div class="head"><h2>Produtos</h2><button id="np" class="btn" type="button">Novo produto</button></div>
+<div class="tools"><input id="ps" type="search" placeholder="Buscar produto" aria-label="Buscar produto"><select id="pc" aria-label="Filtrar por categoria"></select></div><div id="plist" class="rows"></div></section>
+<section id="v-cat" hidden><div class="head"><h2>Categorias</h2><button id="nc" class="btn" type="button">Nova categoria</button></div><div id="clist" class="rows"></div></section>
+</main></div>
+<dialog id="pdlg"><form id="pf" class="dform"><h2 id="pt">Produto</h2>
+<label>Nome<input name="name" required maxlength="120"></label><label>Marca<input name="brand" maxlength="60"></label>
+<div class="two"><label>Categoria<select name="category_id" id="pcat"></select></label><label>Preço (R$)<input name="price" inputmode="decimal" placeholder="Vazio = preço sob consulta"></label></div>
+<div class="two"><label>Disponibilidade<select name="status"><option value="disponivel">Disponível</option><option value="indisponivel">Indisponível</option></select></label><label>Selos (separe por vírgula)<input name="badges" placeholder="Novo, Estoque Limitado"></label></div>
+<label>Descrição<textarea name="description" rows="4" maxlength="2000"></textarea></label>
+<div id="imgsbox"><p class="lbl">Imagens</p><div id="pimgs" class="imgs"></div></div>
+<label>Adicionar imagens (JPEG, PNG ou WebP)<input id="files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+<p id="perr" class="err" role="alert"></p><div class="acts"><button type="button" class="btn ghost" data-close>Cancelar</button><button class="btn" type="submit" id="psave">Salvar</button></div></form></dialog>
+<dialog id="cdlg"><form id="cf" class="dform"><h2 id="ct">Categoria</h2><label>Nome<input name="name" required maxlength="60"></label><label>Ordem de exibição<input name="sort_order" type="number" min="0" max="999" value="0"></label>
+<p id="cerr" class="err" role="alert"></p><div class="acts"><button type="button" class="btn ghost" data-close>Cancelar</button><button class="btn" type="submit">Salvar</button></div></form></dialog>
+<dialog id="xdlg"><div class="dform"><h2>Confirmar exclusão</h2><p id="xm"></p><div class="acts"><button id="xno" class="btn ghost" type="button">Cancelar</button><button id="xyes" class="btn danger" type="button">Excluir</button></div></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div><script src="/js/admin.js" defer></script></body></html>

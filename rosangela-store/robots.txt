@@ -1,0 +1,6 @@
+# robots.txt — Rosângela Corrêa Store
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://rosangelacorreastore.com.br/sitemap.xml
