@@ -27,21 +27,35 @@ function find(t, prods) {
   return prods.filter((p) => norm(p.name).split(' ').some((n) => n.length >= 4 && words.includes(n)));
 }
 
+function fallbackImageFor(p) {
+  const slug = String(p.slug || '');
+  if (/^parka-de-microfibra-[1-4]$/.test(slug)) return '/assets/images/roupa' + slug.slice(-1) + '.webp';
+  const known = {
+    'asad': 'asad.jpeg', 'salvo-elixir': 'salvo-elixir.jpeg', 'yeah-man': 'yeah-man.jpeg',
+    'victorioso': 'victorioso.jpeg', 'atheeri': 'atheeri.jpeg', 'yara': 'yara.jpeg',
+    'no-2-men': 'no-2-men.jpeg', 'opulent-dubai': 'opulent-dubai.jpeg',
+    'delilah-pour-femme': 'delilah-pour-femme.jpeg', 'fakhar-gold': 'fakhar-gold.jpeg',
+    'asad-zanzibar': 'asad-zanzibar.jpeg'
+  };
+  return known[slug] ? '/assets/images/perfumes/' + known[slug] : null;
+}
+
 function imageFor(p) {
   const images = Array.isArray(p.images) ? p.images.slice().sort((a, b) =>
     (Number(b.is_main) - Number(a.is_main)) || (Number(a.position) - Number(b.position))
   ) : [];
   const item = images[0];
-  if (!item || !item.url) return null;
+  if (!item || !item.url) return fallbackImageFor(p) ? { url: fallbackImageFor(p), alt: p.name } : null;
   let url = String(item.url).trim();
   if (/^assets\//.test(url)) url = '/' + url;
-  if (!/^https:\/\//.test(url) && !/^\/(?!\/)/.test(url)) return null;
+  if (!/^https:\/\//.test(url) && !/^\/(?!\/)/.test(url)) return fallbackImageFor(p) ? { url: fallbackImageFor(p), alt: p.name } : null;
   return { url, alt: item.alt || p.name };
 }
 
 function cardFor(p) {
   return {
     name: p.name,
+    slug: p.slug,
     brand: p.brand || '',
     price: money(p.price),
     status: p.status === 'disponivel' ? 'Disponível' : 'Indisponível no momento',
