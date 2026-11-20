@@ -41,7 +41,17 @@ async function sb(path, opt = {}, key = SVC) {
   const resource = String(path).split('?')[0];
   let r;
   try {
-    r = await fetch(URL_ + path, { ...opt, headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(opt.headers || {}) } });
+    const isLegacyJwtKey = String(key || '').split('.').length === 3;
+    const authHeaders = isLegacyJwtKey ? { Authorization: `Bearer ${key}` } : {};
+    r = await fetch(URL_ + path, {
+      ...opt,
+      headers: {
+        apikey: key,
+        'Content-Type': 'application/json',
+        ...authHeaders,
+        ...(opt.headers || {})
+      }
+    });
   } catch (e) {
     console.error('[SUPABASE REST NETWORK ERROR]', {
       resource,
