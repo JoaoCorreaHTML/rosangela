@@ -5,7 +5,39 @@ const out = (s, b) => ({ statusCode: s, headers: H, body: JSON.stringify(b) });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuid = (v) => { if (!UUID.test(String(v || ''))) throw new HttpError(400, 'Identificador inválido'); return v; };
 
+let serviceRoleDiagnosticLogged = false;
+
+function logSupabaseConfig(key) {
+  if (serviceRoleDiagnosticLogged || key !== SVC) return;
+  serviceRoleDiagnosticLogged = true;
+
+  let keyRole = 'não identificado';
+  let keyRef = null;
+  try {
+    const payloadPart = String(SVC).split('.')[1];
+    if (!payloadPart) throw new Error('JWT sem payload');
+    const normalized = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(Buffer.from(normalized, 'base64').toString('utf8'));
+    keyRole = payload.role || 'ausente';
+    keyRef = payload.ref || null;
+  } catch {
+    keyRole = 'chave sem payload JWT legível';
+  }
+
+  let host = 'URL inválida ou ausente';
+  try { host = new URL(URL_).host; } catch {}
+
+  // Registra somente metadados não secretos; nunca imprimir a chave ou o token.
+  console.log('[SUPABASE CONFIG CHECK]', {
+    host,
+    keyRole,
+    keyRef,
+    serviceRoleKeyConfigured: Boolean(SVC)
+  });
+}
+
 async function sb(path, opt = {}, key = SVC) {
+  logSupabaseConfig(key);
   const resource = String(path).split('?')[0];
   let r;
   try {
