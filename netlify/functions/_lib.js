@@ -6,15 +6,37 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuid = (v) => { if (!UUID.test(String(v || ''))) throw new HttpError(400, 'Identificador inválido'); return v; };
 
 async function sb(path, opt = {}, key = SVC) {
-  const r = await fetch(URL_ + path, { ...opt, headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(opt.headers || {}) } });
+  const resource = String(path).split('?')[0];
+  let r;
+  try {
+    r = await fetch(URL_ + path, { ...opt, headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(opt.headers || {}) } });
+  } catch (e) {
+    console.error('[SUPABASE REST NETWORK ERROR]', {
+      resource,
+      error_name: e?.name || 'Error',
+      error_message: e?.message || 'Falha de conexão'
+    });
+    throw new HttpError(502, 'Falha na operação');
+  }
   const t = await r.text(); let d = null; try { d = t ? JSON.parse(t) : null; } catch { d = t; }
-  if (!r.ok) throw new HttpError(r.status === 409 ? 409 : r.status === 400 ? 400 : 502, r.status === 409 ? 'Registro duplicado ou em uso' : 'Falha na operação');
+  if (!r.ok) {
+    // Diagnóstico interno: nunca registrar tokens, chaves, senhas ou parâmetros da consulta.
+    console.error('[SUPABASE REST ERROR]', {
+      resource,
+      status: r.status,
+      code: d && typeof d === 'object' ? d.code : undefined,
+      message: d && typeof d === 'object' ? d.message : undefined,
+      details: d && typeof d === 'object' ? d.details : undefined,
+      hint: d && typeof d === 'object' ? d.hint : undefined
+    });
+    throw new HttpError(r.status === 409 ? 409 : r.status === 400 ? 400 : 502, r.status === 409 ? 'Registro duplicado ou em uso' : 'Falha na operação');
+  }
   return d;
 }
 const rest = (p, o) => sb('/rest/v1/' + p, o);
 
 async function requireAdmin(event) {
-  const token = (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer\s+/i, '');
+  const token = (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer\\s+/i, '');
   if (!token) throw new HttpError(401, 'Faça login para continuar');
   let user;
   try {
@@ -36,11 +58,12 @@ const wrap = (fn, { admin = true, methods } = {}) => async (event) => {
     return await fn(event, body);
   } catch (e) {
     if (e instanceof HttpError) return out(e.status, { error: e.message });
+    console.error('[FUNCTION UNEXPECTED ERROR]', { name: e?.name || 'Error', message: e?.message || 'Erro interno' });
     return out(500, { error: 'Erro interno' });
   }
 };
 
-const slugify = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'item';
+const slugify = (s) => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'item';
 const str = (v, max, label, req) => { const s = typeof v === 'string' ? v.trim() : ''; if (req && !s) throw new HttpError(400, `${label} é obrigatório`); if (s.length > max) throw new HttpError(400, `${label} excede ${max} caracteres`); return s || null; };
 
 function cleanProduct(b) {
