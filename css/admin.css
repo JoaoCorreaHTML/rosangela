@@ -359,3 +359,65 @@ body:has(#login:not([hidden]))::after{
   #pdlg,#cdlg,#xdlg{max-height:calc(100dvh - 1rem)}
   #pdlg .dform,#cdlg .dform,#xdlg .dform{max-height:calc(100dvh - 1rem)}
 }
+
+
+/* Dialog typography contrast: keep text readable on the dark modal surface */
+#pdlg .dform,
+#cdlg .dform,
+#xdlg .dform{
+  color:#f6eadb;
+}
+#pdlg .dform h2,
+#cdlg .dform h2,
+#xdlg .dform h2{
+  color:#fff2e2!important;
+  text-shadow:0 1px 1px rgba(0,0,0,.16);
+}
+#pdlg #pf > label,
+#pdlg #pf .two label,
+#cdlg #cf label{
+  color:#f0dfcb!important;
+  font-weight:600;
+}
+#pdlg #pf .lbl,
+#pdlg #imgsbox .lbl{
+  color:#f0dfcb!important;
+}
+#pdlg #pf > label:has(#files){
+  color:#f0dfcb!important;
+  background:rgba(255,238,216,.07);
+  border-color:rgba(240,215,181,.38);
+}
+#pdlg #imgsbox{
+  background:rgba(255,245,232,.055);
+  border-color:rgba(240,215,181,.2);
+}
+#pdlg .im{
+  background:rgba(255,245,232,.08);
+  border-color:rgba(240,215,181,.2);
+}
+#pdlg .im .btn.ghost,
+#pdlg .acts .btn.ghost,
+#cdlg .acts .btn.ghost,
+#xdlg .acts .btn.ghost{
+  color:#fff0dc!important;
+  border-color:rgba(255,235,213,.42)!important;
+  background:rgba(255,255,255,.055)!important;
+}
+#pdlg .im .btn.ghost:hover,
+#pdlg .acts .btn.ghost:hover,
+#cdlg .acts .btn.ghost:hover,
+#xdlg .acts .btn.ghost:hover{
+  color:#2b2119!important;
+  background:#e9c99e!important;
+  border-color:#e9c99e!important;
+}
+#pdlg .acts,#cdlg .acts,#xdlg .acts{
+  background:rgba(48,37,29,.96);
+  border-top-color:rgba(240,215,181,.22);
+}
+#xdlg p{color:#ead9c6!important}
+#pdlg .err,#cdlg .err{color:#ffb5a9!important}
+#pdlg #pf input::placeholder,
+#pdlg #pf textarea::placeholder,
+#cdlg #cf input::placeholder{color:#8a7867;opacity:1}
