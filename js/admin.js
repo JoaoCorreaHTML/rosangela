@@ -96,8 +96,8 @@
     $('#clist').replaceChildren(...S.categories.map((c) => {
       const n = S.products.filter((p) => p.category_id === c.id).length; const r = el('div', 'row cat');
       const m = el('div'); m.append(el('b', null, c.name), el('small', null, `${n} ${n === 1 ? 'produto' : 'produtos'}`));
-      const a = el('div', 'ra'); const e = el('button', 'btn ghost xs', 'Editar'); e.type = 'button'; e.onclick = () => openCat(c);
-      const d = el('button', 'btn ghost xs', 'Excluir'); d.type = 'button'; d.onclick = async () => { if (!await ask(`Excluir a categoria "${c.name}"?`)) return; try { await api('admin-categories?id=' + c.id, 'DELETE', null, { 'x-confirm': 'delete' }); toast('Categoria excluída'); await load(); } catch (x) { toast(x.message); } };
+      const a = el('div', 'ra'); const e = el('button', 'btn ghost xs', 'Editar'); withIcon(e, 'edit'); e.type = 'button'; e.onclick = () => openCat(c);
+      const d = el('button', 'btn ghost xs', 'Excluir'); withIcon(d, 'delete'); d.type = 'button'; d.onclick = async () => { if (!await ask(`Excluir a categoria "${c.name}"?`)) return; try { await api('admin-categories?id=' + c.id, 'DELETE', null, { 'x-confirm': 'delete' }); toast('Categoria excluída'); await load(); } catch (x) { toast(x.message); } };
       a.append(e, d); r.append(m, a); return r;
     }));
   }
