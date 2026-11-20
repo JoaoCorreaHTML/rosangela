@@ -1,11 +1,6 @@
 # robots.txt — Rosângela Corrêa Store
 User-agent: *
 Allow: /
-Disallow: /404.html
-
-# Não bloquear CSS, JS ou imagens necessários para renderização
-Allow: /css/
-Allow: /js/
-Allow: /assets/
+Disallow: /admin/
 
 Sitemap: https://rosangelacorreastore.com.br/sitemap.xml
