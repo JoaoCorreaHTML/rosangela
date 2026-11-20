@@ -87,3 +87,22 @@ h1,h2,h3,.price{font-family:var(--serif);font-weight:600;line-height:.98;letter-
 .chat-fab{border-radius:18px}
 .chat-fab svg{width:20px;height:20px}
 @media(max-width:760px){.chat-panel{border-radius:25px}.chat-hd{border-radius:24px 24px 0 0}}
+
+
+/* Mobile floating actions: WhatsApp and support chat share one bottom action row */
+@media(max-width:760px){
+  .wa-float{left:1rem;right:auto;bottom:1rem;min-height:48px;padding:.72rem 1rem;border-radius:999px;z-index:35;box-shadow:0 8px 24px rgba(30,50,35,.22)}
+  .chat-fab{right:1rem;left:auto;bottom:1rem;min-height:48px;padding:.72rem 1rem;border-radius:999px;z-index:36;box-shadow:0 8px 24px rgba(48,36,29,.22)}
+  .chat-panel{bottom:5.3rem;right:.5rem;height:min(620px,calc(100dvh - 6rem));z-index:45}
+}
+@media(max-width:380px){
+  .wa-float{left:.65rem;gap:.35rem;padding:.68rem .75rem;font-size:.68rem}
+  .chat-fab{right:.65rem;gap:.35rem;padding:.68rem .75rem;font-size:.68rem}
+  .chat-fab-icon{width:1.45rem;height:1.45rem}
+}
+@media(max-width:340px){
+  .wa-float{font-size:0;gap:0;width:48px;justify-content:center;padding:.65rem}
+  .wa-float span{font-size:1rem}
+  .chat-fab{font-size:0;gap:0;width:48px;justify-content:center;padding:.65rem}
+  .chat-fab span{display:none}
+}
