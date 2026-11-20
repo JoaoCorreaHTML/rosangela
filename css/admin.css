@@ -421,3 +421,15 @@ body:has(#login:not([hidden]))::after{
 #pdlg #pf input::placeholder,
 #pdlg #pf textarea::placeholder,
 #cdlg #cf input::placeholder{color:#8a7867;opacity:1}
+
+/* Icons that match each admin section and action */
+.has-icon{display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
+.has-icon svg{width:16px;height:16px;flex:0 0 16px}
+.tabs button{display:inline-flex;align-items:center;gap:.5rem}
+.tabs button::before{content:"";width:17px;height:17px;display:inline-block;flex:0 0 17px;background:currentColor}
+.tabs button[data-v="dash"]::before{mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='4' rx='1'/%3E%3Crect x='14' y='10' width='7' height='11' rx='1'/%3E%3Crect x='3' y='13' width='7' height='8' rx='1'/%3E%3C/svg%3E") center/contain no-repeat}
+.tabs button[data-v="prod"]::before{mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 3 9 5-9 5-9-5 9-5Zm-9 5 9 5 9-5M3 13l9 5 9-5M12 13v8'/%3E%3C/svg%3E") center/contain no-repeat}
+.tabs button[data-v="cat"]::before{mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1'/%3E%3C/svg%3E") center/contain no-repeat}
+.stat-icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:rgba(190,145,94,.13);color:var(--bronze)}
+.stat-icon svg{width:19px;height:19px}
+@media(max-width:560px){.tabs button{gap:.35rem;padding-inline:.65rem}.tabs button::before{width:15px;height:15px;flex-basis:15px}}
