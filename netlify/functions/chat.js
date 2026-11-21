@@ -2,7 +2,7 @@
 const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
 const H = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const WA = '5511971752204';
-const MAPS = 'https://www.google.com/maps/search/?api=1&query=Rua+Ab%C3%ADlio+do+Santos+Branco+498+Jardim+Praiano+Guaruj%C3%A1';
+const MAPS = 'https://www.google.com/maps/search/?api=1&query=Avenida+Ab%C3%ADlio+dos+Santos+Branco+498+Enseada+Guaruj%C3%A1+SP+11440-380';
 const IG = 'https://www.instagram.com/rosangela_correastoreoficial';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const wa = (txt) => ({ label: 'Conversar pelo WhatsApp', url: 'https://wa.me/' + WA + '?text=' + encodeURIComponent(txt || 'Olá! Vim pelo site da Rosângela Corrêa Store.') });
@@ -89,7 +89,7 @@ function answer(msg, data) {
     return R('Olá! Seja bem-vinda à Rosângela Corrêa Store. Como posso ajudar você hoje?', [], ['Ver perfumes', 'Ver roupas', 'Encontrar um produto']);
   }
   if (/(entrega|entregam|frete|envio|enviam)/.test(t)) return R('No momento, a loja não realiza entregas. Para confirmar outras informações, fale diretamente com a equipe.', [wa()]);
-  if (/(endereco|onde fica|localizacao|como chegar|mapa)/.test(t)) return R('A loja fica no Guarujá, em São Paulo. Você pode consultar a localização pelo mapa.', [{ label: 'Ver localização no mapa', url: MAPS }]);
+  if (/(endereco|onde fica|localizacao|como chegar|mapa)/.test(t)) return R('A loja fica na Av. Abílio dos Santos Branco, 498, bairro Enseada, dentro do espaço de Pérolas, em Guarujá – SP. Consulte a localização pelo mapa.', [{ label: 'Ver localização no mapa', url: MAPS }]);
   if (/(instagram|insta)\b/.test(t)) return R('Acompanhe as novidades da loja pelo Instagram.', [{ label: 'Visitar Instagram', url: IG }]);
   if (/(atendente|humano|pessoa|whatsapp|zap|telefone|contato|falar com|loja)/.test(t)) return R('Nossa equipe pode atender você pelo WhatsApp: (11) 97175-2204.', [wa(), { label: 'Instagram da loja', url: IG }], ['Ver perfumes', 'Ver roupas']);
   if (/(categoria|o que voces (vendem|tem)|tipos de produto|catalogo)/.test(t)) {
